@@ -17,18 +17,22 @@
     <xs:sequence>
       <xs:element type="noticiaType" name="noticia"/>
     </xs:sequence>
-    <xs:attribute type="xs:string" name="tipo">
-      <xs:restriction base="xs:string">
-        <xs:enumeration value="europe"/>
-        <xs:enumeration value="us"/>
-        <xs:enumeration value="asia"/>
-        <xs:enumeration value="africa"/>
-        <xs:enumeration value="china"/>
-        <xs:enumeration value="americas"/>
-        <xs:enumeration value="middleast"/>
-      </xs:restriction>
-    </xs:attribute> 
+    <xs:attribute type="categoria_tipo" name="tipo"/>
   </xs:complexType>
+
+  <xs:simpleType name="categoria_tipo">
+   <xs:restriction base="xs:string">
+      <xs:enumeration value="europe"/>
+      <xs:enumeration value="us"/>
+      <xs:enumeration value="asia"/>
+      <xs:enumeration value="africa"/>
+      <xs:enumeration value="china"/>
+      <xs:enumeration value="americas"/>
+      <xs:enumeration value="middleast"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+
   <xs:complexType name="jornalType">
     <xs:sequence>
       <xs:element type="categoriaType" name="categoria"/>
