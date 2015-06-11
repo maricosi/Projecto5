@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" attributeFormDefault="unqualified" elementFormDefault="qualified">
+  <xs:element name="jornal" type="jornalType"/>
+  <xs:complexType name="noticiaType">
+    <xs:sequence>
+      <xs:element type="xs:anyURI" name="url"/>
+      <xs:element type="xs:string" name="titulo"/>
+      <xs:element type="xs:string" name="highlights"/>
+      <xs:element type="xs:date" name="date"/>
+      <xs:element type="xs:string" name="author"/>
+      <xs:element type="xs:string" name="newstext"/>
+      <xs:element type="xs:anyURI" name="photo"/>
+      <xs:element type="xs:anyURI" name="videoURLS"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="categoriaType">
+    <xs:sequence>
+      <xs:element type="noticiaType" name="noticia"/>
+    </xs:sequence>
+    <xs:attribute type="xs:string" name="tipo">
+      <xs:restriction base="xs:string">
+        <xs:enumeration value="europe"/>
+        <xs:enumeration value="us"/>
+        <xs:enumeration value="asia"/>
+        <xs:enumeration value="africa"/>
+        <xs:enumeration value="china"/>
+        <xs:enumeration value="americas"/>
+        <xs:enumeration value="middleast"/>
+      </xs:restriction>
+    </xs:attribute> 
+  </xs:complexType>
+  <xs:complexType name="jornalType">
+    <xs:sequence>
+      <xs:element type="categoriaType" name="categoria"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>
