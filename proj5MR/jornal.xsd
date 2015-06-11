@@ -5,11 +5,11 @@
     <xs:sequence>
       <xs:element type="xs:anyURI" name="url"/>
       <xs:element type="xs:string" name="titulo"/>
-      <xs:element type="xs:string" name="highlights"/>
+      <xs:element type="xs:string" name="highlights" maxOccurs="unbounded" minOccurs="0"/>
       <xs:element type="xs:date" name="date"/>
       <xs:element type="xs:string" name="author"/>
       <xs:element type="xs:string" name="newstext"/>
-      <xs:element type="xs:anyURI" name="photo"/>
+      <xs:element type="imageType" name="image" maxOccurs="unbounded" minOccurs="0"/>
       <xs:element type="xs:anyURI" name="videoURLS"/>
     </xs:sequence>
   </xs:complexType>
@@ -38,4 +38,12 @@
       <xs:element type="categoriaType" name="categoria"/>
     </xs:sequence>
   </xs:complexType>
+
+  <xs:complexType name="imageType">
+    <xs:sequence>
+      <xs:element type="xs:anyURI" name="url"/>
+      <xs:element type="xs:string" name="caption"/>
+    </xs:sequence>
+  </xs:complexType>
+
 </xs:schema>
