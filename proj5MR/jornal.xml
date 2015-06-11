@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet date="text/xsl" href="index.xsl"?>
+<jornal>
+	<categoria tipo="Europa">
+		<noticia>
+			<url>/2015/06/11/sport/forbes-magazine-floyd-mayweather-manny-pacquiao-worlds-highest-paid-athletes/index.html</url>
+			<titulo>titulo da noticia</titulo>
+			<highlights>Subtitulo/resumo</highlight>
+			<date>2015/06/28</date>
+			<author>nome do autor</author>
+			<newstext>conteudo da noticia</newstext>
+			<photo>http://i2.cdn.turner.com/cnnnext/dam/assets/150503005256-03-mayweather-fight-small-169.jpg</photo>
+			<videoURLS>https://youtu.be/t7PCkDGglhU</videoURLS>
+		</noticia>
+	</categoria>
+</jornal>
