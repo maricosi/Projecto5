@@ -13,9 +13,16 @@
       <xs:element type="xs:anyURI" name="videoURLS"/>
     </xs:sequence>
   </xs:complexType>
+  
+    <xs:complexType name="jornalType">
+    <xs:sequence>
+      <xs:element type="categoriaType" name="categoria" maxOccurs="7" minOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+  
   <xs:complexType name="categoriaType">
     <xs:sequence>
-      <xs:element type="noticiaType" name="noticia"/>
+      <xs:element type="noticiaType" name="noticia" maxOccurs="unbounded" minOccurs="0"/>
     </xs:sequence>
     <xs:attribute type="categoria_tipo" name="tipo"/>
   </xs:complexType>
@@ -31,13 +38,6 @@
       <xs:enumeration value="middleast"/>
     </xs:restriction>
   </xs:simpleType>
-
-
-  <xs:complexType name="jornalType">
-    <xs:sequence>
-      <xs:element type="categoriaType" name="categoria"/>
-    </xs:sequence>
-  </xs:complexType>
 
   <xs:complexType name="imageType">
     <xs:sequence>
