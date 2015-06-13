@@ -16,12 +16,12 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for imageType complex type.
+ * <p>Java class for videoType complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="imageType"&gt;
+ * &lt;complexType name="videoType"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
@@ -36,11 +36,11 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "imageType", propOrder = {
+@XmlType(name = "videoType", propOrder = {
     "url",
     "caption"
 })
-public class ImageType {
+public class VideoType {
 
     @XmlElement(required = true)
     @XmlSchemaType(name = "anyURI")
