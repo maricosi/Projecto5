@@ -35,6 +35,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.jsoup.select.Evaluator.AttributeWithValueStarting;
 
 
 public class Crawler {
@@ -42,9 +43,20 @@ public class Crawler {
 	
 	public static void main(String[] args) throws Exception {
 		
-		Document doc = Jsoup.connect(URL).get();
-		//String title = doc.title();
-
+		Document doc = null;
+		
+		int attempt = 1;
+		while (attempt <= 4) {
+			try {
+				doc = Jsoup.connect(URL).timeout(attempt*3000).get();
+				break;
+			}
+			catch(IOException e) {
+				attempt++;
+			}
+		}
+		if (doc == null) return;
+		
 		List<String> categories = Arrays.asList(new String[]{"us", "europe", "asia", "africa", "china", "americas", "middleeast"}); 
 		Elements noticias = doc.getElementsByClass("cd__headline");
 
@@ -80,7 +92,7 @@ public class Crawler {
 		
 		List<NoticiaType> news = new ArrayList<>();
 		for (String l : links) {
-			int attempt = 1;
+			attempt = 1;
 			
 			while (attempt <= 4) {
 				try {
@@ -106,11 +118,7 @@ public class Crawler {
 		noticia.setUrl(href);
 		//System.out.println(href);
 		// exemplo de teste
-		Document doc = null;
-		if (attempt == 1) 
-			doc = Jsoup.connect(href).get();
-		else 
-			doc = Jsoup.connect(href).timeout(attempt*3000).get();
+		Document doc = Jsoup.connect(href).timeout(attempt*3000).get();
 		
 		
 		Element title = doc.getElementsByClass("pg-headline").first();
@@ -207,7 +215,7 @@ public class Crawler {
 	
 	
 	
-	public static String marshal(List<NoticiaType> noticias) throws Exception{
+	private static String marshal(List<NoticiaType> noticias) throws Exception{
 
 		  
 		String context = "pt.uc.dei.aor.paj";
@@ -232,7 +240,8 @@ public class Crawler {
 		
 		Marshaller m = jc.createMarshaller();
 		m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE );
-
+		m.setProperty("com.sun.xml.internal.bind.xmlHeaders", 
+        	    "\n<?xml-stylesheet type=\"text/xsl\" href=\"text.xsl\" ?>");
 		StringWriter w = new StringWriter();
 		// Write the XML File
 		m.marshal(jornal, w);
