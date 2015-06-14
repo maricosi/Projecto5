@@ -10,9 +10,11 @@ package pt.uc.dei.aor.paj;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -39,6 +41,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "jornalType", propOrder = {
     "categoria"
 })
+@XmlRootElement
 public class JornalType {
 
     @XmlElement(required = true)

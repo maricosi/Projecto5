@@ -46,7 +46,14 @@ public class CategoriaType {
     @XmlAttribute(name = "tipo")
     protected CategoriaTipo tipo;
 
-    /**
+    public CategoriaType(CategoriaTipo type) {
+		tipo = type;
+	}
+    
+    public CategoriaType() {
+	}
+
+	/**
      * Gets the value of the noticia property.
      * 
      * <p>

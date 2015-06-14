@@ -1,19 +1,36 @@
 package pt.uc.dei.aor.paj;
+
+
+import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Scanner;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.jms.ConnectionFactory;
+import javax.jms.JMSContext;
+import javax.jms.JMSProducer;
+import javax.jms.JMSRuntimeException;
+import javax.jms.Topic;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.xml.XMLConstants;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
 
-import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -23,7 +40,7 @@ import org.jsoup.select.Elements;
 public class Crawler {
 	private final static String URL = "http://edition.cnn.com";
 	
-	public static void main(String[] args) throws DatatypeConfigurationException, IOException {
+	public static void main(String[] args) throws Exception {
 		
 		Document doc = Jsoup.connect(URL).get();
 		//String title = doc.title();
@@ -59,23 +76,32 @@ public class Crawler {
 			}
 		}
 
+		int counter = 1;
+		
+		List<NoticiaType> news = new ArrayList<>();
 		for (String l : links) {
 			int attempt = 1;
-			System.out.println(URL+l);
-			while (attempt <= 3) {
+			
+			while (attempt <= 4) {
 				try {
-					contextOfNews(URL + l, 1);
+					NoticiaType noticia = contextOfNews(URL + l, 1);
+					System.out.println((counter++)+" "+noticia.getTitulo());
+					System.out.println(noticia.getUrl());
+					news.add(noticia);
 					break;
 				} catch (IOException e) {
 					attempt++;
 				}
 			}
 		}
-
+		String xml = marshal(news);
+		publish(xml);
+		System.out.println("published");
+		
 	}
 
 
-	public static void contextOfNews(String href, int attempt) throws DatatypeConfigurationException, IOException{
+	public static NoticiaType contextOfNews(String href, int attempt) throws DatatypeConfigurationException, IOException{
 		NoticiaType noticia= new NoticiaType();
 		noticia.setUrl(href);
 		//System.out.println(href);
@@ -176,6 +202,60 @@ public class Crawler {
 			//System.out.println(url.attr("content"));
 		}
 		
-		//System.out.println(noticia.getDate());
+		return noticia;
+	}
+	
+	
+	
+	public static String marshal(List<NoticiaType> noticias) throws Exception{
+
+		  
+		String context = "pt.uc.dei.aor.paj";
+		
+		JAXBContext jc = JAXBContext.newInstance(context);
+		
+		ObjectFactory factory = new ObjectFactory();
+		JornalType jornal = factory.createJornalType();
+		
+		jornal.getCategoria().add(new CategoriaType(CategoriaTipo.AFRICA));
+		jornal.getCategoria().add(new CategoriaType(CategoriaTipo.US));
+		jornal.getCategoria().add(new CategoriaType(CategoriaTipo.ASIA));
+		jornal.getCategoria().add(new CategoriaType(CategoriaTipo.EUROPE));
+		jornal.getCategoria().add(new CategoriaType(CategoriaTipo.MIDDLEAST));
+		jornal.getCategoria().add(new CategoriaType(CategoriaTipo.AMERICAS));
+		jornal.getCategoria().add(new CategoriaType(CategoriaTipo.CHINA));
+		
+		for (NoticiaType n : noticias) {
+			jornal.getCategoria().get((int) (Math.random()*7)).getNoticia().add(n);
+		}
+
+		
+		Marshaller m = jc.createMarshaller();
+		m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE );
+
+		StringWriter w = new StringWriter();
+		// Write the XML File
+		m.marshal(jornal, w);
+		return w.toString();
+	}
+	
+	
+	
+	public static void publish(String xml) throws NamingException {
+		ConnectionFactory cf;
+		Topic topic;
+
+		cf = InitialContext.doLookup("jms/RemoteConnectionFactory");
+		topic = InitialContext.doLookup("jms/topic/testTopic");
+
+
+
+		try (JMSContext jcontext = cf.createContext("mr", "mr2015");) {
+			JMSProducer mp = jcontext.createProducer();
+			mp.send(topic, xml);
+		} catch (JMSRuntimeException re) {
+			re.printStackTrace();
+		}
+
 	}
 }
