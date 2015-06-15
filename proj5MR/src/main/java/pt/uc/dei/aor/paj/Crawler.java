@@ -257,8 +257,6 @@ public class Crawler {
 		cf = InitialContext.doLookup("jms/RemoteConnectionFactory");
 		topic = InitialContext.doLookup("jms/topic/testTopic");
 
-
-
 		try (JMSContext jcontext = cf.createContext("mr", "mr2015");) {
 			JMSProducer mp = jcontext.createProducer();
 			mp.send(topic, xml);

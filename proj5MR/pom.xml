@@ -97,6 +97,9 @@
 						<manifest>
 							<mainClass>pt.uc.dei.aor.paj.Crawler</mainClass>
 						</manifest>
+						<manifestEntries>
+          					<Class-Path>.</Class-Path>
+        				</manifestEntries>
 					</archive>
 					<!-- will assembly the exploded dependencies within our uber jar -->
 					<descriptorRefs>
