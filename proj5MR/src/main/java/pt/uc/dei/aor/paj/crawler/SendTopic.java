@@ -1,3 +1,4 @@
+package pt.uc.dei.aor.paj.crawler;
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSContext;
 import javax.jms.JMSProducer;
