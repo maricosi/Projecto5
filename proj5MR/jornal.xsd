@@ -6,7 +6,7 @@
       <xs:element type="xs:anyURI" name="url"/>
       <xs:element type="xs:string" name="titulo"/>
       <xs:element type="xs:string" name="highlights" maxOccurs="unbounded" minOccurs="0"/>
-      <xs:element type="xs:date" name="date"/>
+      <xs:element type="xs:dateTime" name="date"/>
       <xs:element type="xs:string" name="author"/>
       <xs:element type="xs:string" name="newstext"/>
       <xs:element type="imageType" name="image" maxOccurs="unbounded" minOccurs="0"/>

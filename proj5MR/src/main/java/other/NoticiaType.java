@@ -6,7 +6,7 @@
 //
 
 
-package pt.uc.dei.aor.paj;
+package other;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +18,7 @@ import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import other.ImageType;
 
 
 /**

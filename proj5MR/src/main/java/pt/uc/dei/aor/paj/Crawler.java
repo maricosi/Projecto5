@@ -130,6 +130,7 @@ public class Crawler {
 		GregorianCalendar calendar = new GregorianCalendar();
 		calendar.setTimeZone(TimeZone.getTimeZone("GMT"));
 		calendar.set(Calendar.SECOND, 0);
+		calendar.set(Calendar.MILLISECOND, 0);
 		Element data = doc.getElementsByClass("update-time").first();
 		//System.out.println(data.text());
 		Pattern timePattern = Pattern.compile("(\\d\\d)(\\d\\d) GMT");
