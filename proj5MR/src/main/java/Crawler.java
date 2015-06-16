@@ -1,7 +1,15 @@
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.TimeZone;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -64,21 +72,43 @@ public class Crawler {
 		// exemplo de teste
 		Document doc = Jsoup.connect(href).get();
 		
-//		Elements video=doc.getElementsByTag("video");
-//		if(video.size()>0){
-//			System.out.println("tem video");
-//		}
-//		Elements flash=doc.getElementsByClass("js-el__video__play-button");
-//		if (flash.size() > 0)
-//			System.out.println("tem flash");
-
 		Element title = doc.getElementsByClass("pg-headline").first();
 		System.out.println(title.text());
 		noticia.setTitulo(title.text());
 		
 		Element data = doc.getElementsByClass("update-time").first();
 		System.out.println(data.text());
-		//noticia.setDate(value);
+		GregorianCalendar dateNoticia= new GregorianCalendar();
+		// Regular Expression \\d{4} (exemple:2256) 
+		Pattern p1=Pattern.compile("(\\d{1,2})(\\d{2}) GMT");
+		Matcher m1 = p1.matcher(data.text());
+		int hour = 0, min = 0,day = 0,year=-1;
+		int month = 0;
+		if(m1.find()){
+			hour=Integer.parseInt(m1.group(1));
+			min=Integer.parseInt(m1.group(2));
+		}
+		
+		Pattern p2=Pattern.compile("(\\w+) (\\d{1,2}), (\\d{4})");
+		Matcher m2 = p2.matcher(data.text());
+		List <String> months= Arrays.asList(new String[]{"January", "February", "March", "April","May", "June","July", "August","September","October","November","December"});
+		
+		if(m2.find()){
+			month=months.indexOf(m2.group(1));
+			day=Integer.parseInt(m2.group(2));
+			year=Integer.parseInt(m2.group(3));
+		}
+		 dateNoticia.setTimeZone(TimeZone.getTimeZone("GMT"));
+		 dateNoticia.set(year, month,day,hour,min);
+		 System.out.println(dateNoticia.getTime());
+		
+		 XMLGregorianCalendar date = null;
+		try {
+			date = DatatypeFactory.newInstance().newXMLGregorianCalendar(dateNoticia);
+		} catch (DatatypeConfigurationException e1) {
+			e1.printStackTrace();
+		}
+		noticia.setDate(date);
 
 		Element author = doc.getElementsByClass("metadata__byline__author").first();
 		System.out.println(author.text());
