@@ -5,7 +5,7 @@
 	<xsl:template match="/">
 		<html>
 			<body>
-				<h2>Jornal</h2>
+				<h1>Jornal</h1>
 				<xsl:apply-templates />
 			</body>
 		</html>

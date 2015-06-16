@@ -12,6 +12,7 @@ import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.naming.NamingException;
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
@@ -74,13 +75,23 @@ public class Crawler {
 		for (String l : links) {
 			adicionaCategory(contextOfNews("http://edition.cnn.com" + l),categorias);
 		}
-		
+		String xml="";
 		try {
-			System.out.println(marshalXML(categorias));
+			xml=marshalXML(categorias);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		try {
+			SendTopic st= new SendTopic();
+			st.send(xml);
+		} catch (NamingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
 	}
 	
 	
@@ -179,7 +190,7 @@ public class Crawler {
 			noticia.getHighlights().add(e.text());
 		}
 
-		Elements paragraphs = doc.getElementsByClass("zn-body__paragraph");
+		Elements paragraphs = doc.getElementsByClass("zn-body__paragraph" );
 		String news="";
 		for (Element e : paragraphs) {
 			System.out.println(e.text());
@@ -238,4 +249,7 @@ public class Crawler {
 		
 		return noticia;
 	}
+	
+	
+	
 }
