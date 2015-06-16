@@ -18,6 +18,7 @@ import org.jsoup.select.Elements;
 
 import pt.uc.dei.aor.paj.ImageType;
 import pt.uc.dei.aor.paj.NoticiaType;
+import pt.uc.dei.aor.paj.VideoType;
 
 
 public class Crawler {
@@ -164,9 +165,21 @@ public class Crawler {
 
 		System.out.println("Video");
 		Elements video = doc.getElementsByClass("js-media__video");
+		
 		for (Element e : video) {
+			VideoType videoURL = new VideoType();
 			Element url = e.select("meta[itemprop=url]").first();
 			System.out.println(url.attr("content"));
+			videoURL.setUrl(url.attr("content"));
+			Elements caption=e.getElementsByClass("media__caption");
+			if(caption.size()>0){
+				System.out.println(caption.first().text());
+				videoURL.setCaption(caption.first().text());
+			}
+			
+			
+			
+			noticia.getVideoURLS().add(videoURL);
 		}
 	}
 }
