@@ -39,9 +39,18 @@ import pt.uc.dei.aor.paj.VideoType;
 
 public class Crawler {
 	public static void main(String[] args) throws IOException {
+		int attempt=1;
+		Document doc = null;
 		List<CategoriaType> categorias= new ArrayList<>();
-		Document doc = Jsoup.connect("http://edition.cnn.com").get();
-		//String title = doc.title();
+		while(attempt<=4){
+			try{
+				doc = Jsoup.connect("http://edition.cnn.com").get();
+				break;
+			}catch (IOException e){
+			attempt++;
+			}
+		}
+		
 
 		List<String> categories = Arrays.asList(new String[]{"us", "europe", "asia", "africa", "china", "americas", "middleeast"}); 
 		Elements noticias = doc.getElementsByClass("cd__headline");
@@ -73,7 +82,17 @@ public class Crawler {
 			}
 		}
 		for (String l : links) {
-			adicionaCategory(contextOfNews("http://edition.cnn.com" + l),categorias);
+			attempt=1;
+			while(attempt<=4){
+				try{
+					adicionaCategory(contextOfNews("http://edition.cnn.com" + l , attempt),categorias);
+					break;
+				}catch(IOException e){
+					attempt++;
+				}
+				
+			}
+			
 		}
 		String xml="";
 		try {
@@ -134,12 +153,12 @@ public class Crawler {
 
 	}
 
-	public static NoticiaType contextOfNews(String href) throws IOException{
+	public static NoticiaType contextOfNews(String href, int attempt) throws IOException{
 		NoticiaType noticia= new NoticiaType();
 		noticia.setUrl(href);
 		System.out.println(href);
-		// exemplo de teste
-		Document doc = Jsoup.connect(href).get();
+		
+		Document doc = Jsoup.connect(href).timeout(attempt*3000).get();
 		
 		Element title = doc.getElementsByClass("pg-headline").first();
 		System.out.println(title.text());
