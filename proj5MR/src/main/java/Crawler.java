@@ -1,29 +1,44 @@
+
+import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.xml.XMLConstants;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
+import javax.xml.transform.Result;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import pt.uc.dei.aor.paj.CategoriaTipo;
+import pt.uc.dei.aor.paj.CategoriaType;
 import pt.uc.dei.aor.paj.ImageType;
+import pt.uc.dei.aor.paj.JornalType;
 import pt.uc.dei.aor.paj.NoticiaType;
+import pt.uc.dei.aor.paj.ObjectFactory;
 import pt.uc.dei.aor.paj.VideoType;
 
 
 public class Crawler {
 	public static void main(String[] args) throws IOException {
-
+		List<CategoriaType> categorias= new ArrayList<>();
 		Document doc = Jsoup.connect("http://edition.cnn.com").get();
 		//String title = doc.title();
 
@@ -48,25 +63,67 @@ public class Crawler {
 							contemNoticia=true;
 						}
 					}
-
 					if(!contemNoticia){
 						links.add(link);
 					}
 				}
 			}
 			catch(Exception e) {
-
 			}
 		}
-
 		for (String l : links) {
-			contextOfNews("http://edition.cnn.com" + l);
+			adicionaCategory(contextOfNews("http://edition.cnn.com" + l),categorias);
 		}
+		
+		try {
+			System.out.println(marshalXML(categorias));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	
+	public static void adicionaCategory (NoticiaType n , List<CategoriaType> listaCategorias){
+		String cat=n.getUrl().split("/")[6];
+		boolean exist=false;
+		for (CategoriaType c:listaCategorias){	
+			if(c.getTipo().equals(CategoriaTipo.fromValue(cat))){
+				exist=true;
+				c.getNoticia().add(n);
+			}
+		}
+		if(!exist){
+			System.out.println(cat);
+			CategoriaType catType=new CategoriaType(CategoriaTipo.fromValue(cat));
+			listaCategorias.add(catType);
+			catType.getNoticia().add(n);
+		}
+	}
+	
+	public static String marshalXML(List<CategoriaType> catType) throws Exception{
+
+		  
+		String context = "pt.uc.dei.aor.paj";
+		
+		JAXBContext jc = JAXBContext.newInstance(context);
+		
+		ObjectFactory factory = new ObjectFactory();
+		JornalType jornal = factory.createJornalType();
+
+		jornal.getCategoria().addAll(catType);
+		
+		Marshaller m = jc.createMarshaller();
+		m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE );
+		
+		StringWriter w=new StringWriter();
+		// Write the XML File
+		m.marshal(jornal, w);
+		return w.toString();
 
 	}
 
-
-	public static void contextOfNews(String href) throws IOException{
+	public static NoticiaType contextOfNews(String href) throws IOException{
 		NoticiaType noticia= new NoticiaType();
 		noticia.setUrl(href);
 		System.out.println(href);
@@ -176,10 +233,9 @@ public class Crawler {
 				System.out.println(caption.first().text());
 				videoURL.setCaption(caption.first().text());
 			}
-			
-			
-			
 			noticia.getVideoURLS().add(videoURL);
 		}
+		
+		return noticia;
 	}
 }

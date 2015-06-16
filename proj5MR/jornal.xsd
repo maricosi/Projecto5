@@ -35,7 +35,7 @@
       <xs:enumeration value="africa"/>
       <xs:enumeration value="china"/>
       <xs:enumeration value="americas"/>
-      <xs:enumeration value="middleast"/>
+      <xs:enumeration value="middleeast"/>
     </xs:restriction>
   </xs:simpleType>
 
