@@ -18,6 +18,8 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -33,6 +35,8 @@ import pt.uc.dei.aor.paj.VideoType;
 
 
 public class Crawler {
+	private static final Logger logger = LogManager.getLogger(Crawler.class);
+	 
 	public static void main(String[] args) throws IOException {
 		int attempt=1;
 		Document doc = null;
@@ -44,6 +48,10 @@ public class Crawler {
 			}catch (IOException e){
 			attempt++;
 			}
+		}
+		if (doc == null) {
+			logger.error("Página da cnn inacessível");
+			return;
 		}
 		
 
@@ -151,18 +159,18 @@ public class Crawler {
 	public static NoticiaType contextOfNews(String href, int attempt) throws IOException{
 		NoticiaType noticia= new NoticiaType();
 		noticia.setUrl(href);
-		System.out.println(href);
+		//System.out.println(href);
 		
 		Document doc = Jsoup.connect(href).timeout(attempt*3000).get();
 		
 		Element title = doc.getElementsByClass("pg-headline").first();
-		System.out.println(title.text());
+		//System.out.println(title.text());
 		noticia.setTitulo(title.text());
 		
 		Element data = doc.getElementsByClass("update-time").first();
-		System.out.println(data.text());
+		//System.out.println(data.text());
 		GregorianCalendar dateNoticia= new GregorianCalendar();
-		// Regular Expression \\d{4} (exemple:2256) 
+		// Regular Expression \\d{4} (example:2256) 
 		Pattern p1=Pattern.compile("(\\d{1,2})(\\d{2}) GMT");
 		Matcher m1 = p1.matcher(data.text());
 		int hour = 0, min = 0,day = 0,year=-1;
@@ -183,7 +191,7 @@ public class Crawler {
 		}
 		 dateNoticia.setTimeZone(TimeZone.getTimeZone("GMT"));
 		 dateNoticia.set(year, month,day,hour,min);
-		 System.out.println(dateNoticia.getTime());
+		 //System.out.println(dateNoticia.getTime());
 		
 		 XMLGregorianCalendar date = null;
 		try {
@@ -194,68 +202,68 @@ public class Crawler {
 		noticia.setDate(date);
 
 		Element author = doc.getElementsByClass("metadata__byline__author").first();
-		System.out.println(author.text());
+		//System.out.println(author.text());
 		noticia.setAuthor(author.text());
 		
 		Elements highlights = doc.getElementsByClass("el__storyhighlights__item");
 		
 		for (Element e : highlights) {
-			System.out.println(e.text());
+			//System.out.println(e.text());
 			noticia.getHighlights().add(e.text());
 		}
 
 		Elements paragraphs = doc.getElementsByClass("zn-body__paragraph" );
 		String news="";
 		for (Element e : paragraphs) {
-			System.out.println(e.text());
+			//System.out.println(e.text());
 			news+=e.text()+"\n";
 		}
 		noticia.setNewstext(news);
 
 
-		System.out.println("full Images");
+		//System.out.println("full Images");
 		Elements fullImages = doc.getElementsByClass("el__image--fullwidth");
 		for (Element e : fullImages) {
 			Element image = e.getElementsByTag("img").first();
-			System.out.println(image.attr("data-src-large"));
+			//System.out.println(image.attr("data-src-large"));
 			ImageType img = new ImageType();
 			img.setUrl(image.attr("data-src-large"));
 			
 			Elements caption= e.getElementsByClass("media__caption");
 			if(caption.size()>0){
-				System.out.println("Captione-img: "+caption.first().text());
+				//System.out.println("Captione-img: "+caption.first().text());
 				img.setCaption(caption.first().text());
 			}
 			noticia.getImage().add(img);
 		}
 
-		System.out.println("expand images");
+		//System.out.println("expand images");
 		Elements expandImages= doc.getElementsByClass("el__image--expandable");
 		for(Element e: expandImages){
 			Element image=e.getElementsByTag("img").first();
-			System.out.println(image.attr("data-src-large"));
+			//System.out.println(image.attr("data-src-large"));
 			ImageType img = new ImageType();
 			img.setUrl(image.attr("data-src-large"));
 			Elements caption= e.getElementsByClass("media__caption");
 			if(caption.size()>0){
-				System.out.println("Captione-img: "+caption.first().text());
+				//System.out.println("Captione-img: "+caption.first().text());
 				img.setCaption(caption.first().text());
 			}
 			noticia.getImage().add(img);
 		}
 
 
-		System.out.println("Video");
+		//System.out.println("Video");
 		Elements video = doc.getElementsByClass("js-media__video");
 		
 		for (Element e : video) {
 			VideoType videoURL = new VideoType();
 			Element url = e.select("meta[itemprop=url]").first();
-			System.out.println(url.attr("content"));
+			//System.out.println(url.attr("content"));
 			videoURL.setUrl(url.attr("content"));
 			Elements caption=e.getElementsByClass("media__caption");
 			if(caption.size()>0){
-				System.out.println(caption.first().text());
+				//System.out.println(caption.first().text());
 				videoURL.setCaption(caption.first().text());
 			}
 			noticia.getVideoURLS().add(videoURL);
