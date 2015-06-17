@@ -66,7 +66,6 @@ public class NoticiaType {
     @XmlElement(required = true)
     @XmlSchemaType(name = "dateTime")
     protected XMLGregorianCalendar date;
-    @XmlElement(required = true)
     protected String author;
     @XmlElement(required = true)
     protected String newstext;
