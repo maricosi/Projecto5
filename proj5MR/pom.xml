@@ -124,6 +124,36 @@
 					<appendAssemblyId>false</appendAssemblyId>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.5.5</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<!-- will main class to MANIFEST.MF -->
+					<archive>
+						<manifest>
+							<mainClass>pt.uc.dei.aor.paj.crawler.Crawler</mainClass>
+						</manifest>
+						<manifestEntries>
+							<Class-Path>.</Class-Path>
+						</manifestEntries>
+					</archive>
+					<!-- will assembly the exploded dependencies within our uber jar -->
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+					<!-- will replace jar without dependencies with assembly jar -->
+					<appendAssemblyId>false</appendAssemblyId>
+				</configuration>
+			</plugin>
 
 		</plugins>
 
