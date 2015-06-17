@@ -36,21 +36,22 @@ import pt.uc.dei.aor.paj.VideoType;
 
 public class Crawler {
 	private static final Logger logger = LogManager.getLogger(Crawler.class);
-	 
+	private static final String URL = "http://edition.cnn.com";
+	
 	public static void main(String[] args) throws IOException {
 		int attempt=1;
 		Document doc = null;
 		List<CategoriaType> categorias= new ArrayList<>();
 		while(attempt<=4){
 			try{
-				doc = Jsoup.connect("http://edition.cnn.com").get();
+				doc = Jsoup.connect(URL).get();
 				break;
 			}catch (IOException e){
 			attempt++;
 			}
 		}
 		if (doc == null) {
-			logger.error("Página da cnn inacessível");
+			logger.error("Página inacessível - "+URL);
 			return;
 		}
 		
@@ -88,7 +89,7 @@ public class Crawler {
 			attempt=1;
 			while(attempt<=4){
 				try{
-					adicionaCategory(contextOfNews("http://edition.cnn.com" + l , attempt),categorias);
+					adicionaCategory(contextOfNews(URL + l , attempt),categorias);
 					break;
 				}catch(IOException e){
 					attempt++;
