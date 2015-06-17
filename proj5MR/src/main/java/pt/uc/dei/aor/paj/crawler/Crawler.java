@@ -37,7 +37,7 @@ import pt.uc.dei.aor.paj.VideoType;
 public class Crawler {
 	private static final Logger logger = LogManager.getLogger(Crawler.class);
 	private static final String URL = "http://edition.cnn.com";
-	private static final String PACKAGE = "pt.uc.dei.aor.paj.crawler";
+	private static final String PACKAGE = "pt.uc.dei.aor.paj";
 	private static final int NUMBER_ATTEMPTS = 4;
 	
 	public static void main(String[] args) throws IOException {
@@ -84,7 +84,7 @@ public class Crawler {
 				}
 			}
 			catch(Exception e) {
-				logger.error("Formato da notícia desconhecido");
+				// formato desconhecido
 			}
 		}
 		
