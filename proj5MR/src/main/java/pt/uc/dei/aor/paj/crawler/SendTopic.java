@@ -18,12 +18,12 @@ public class SendTopic {
 		topic = InitialContext.doLookup("jms/topic/testTopic");
 	}
 
-	public void send(String text) {
+	public void send(String text) throws Exception {
 		try (JMSContext jcontext = cf.createContext("mr", "mr2015");) {
 			JMSProducer mp = jcontext.createProducer();
 			mp.send(topic, text);
 		} catch (JMSRuntimeException re) {
-			re.printStackTrace();
+			throw new Exception();
 		}
 	}
 

@@ -37,17 +37,19 @@ import pt.uc.dei.aor.paj.VideoType;
 public class Crawler {
 	private static final Logger logger = LogManager.getLogger(Crawler.class);
 	private static final String URL = "http://edition.cnn.com";
+	private static final String PACKAGE = "pt.uc.dei.aor.paj.crawler";
+	private static final int NUMBER_ATTEMPTS = 4;
 	
 	public static void main(String[] args) throws IOException {
 		int attempt=1;
 		Document doc = null;
 		List<CategoriaType> categorias= new ArrayList<>();
-		while(attempt<=4){
+		while(attempt <= NUMBER_ATTEMPTS){
 			try{
 				doc = Jsoup.connect(URL).get();
 				break;
 			}catch (IOException e){
-			attempt++;
+				attempt++;
 			}
 		}
 		if (doc == null) {
@@ -66,8 +68,7 @@ public class Crawler {
 			String link = news.attr("href");
 
 			String[] fields = link.split("/");
-			//System.out.println(Arrays.toString(fields));
-
+			
 			try {
 				if (fields[1].substring(0,3).equals("201") && categories.indexOf(fields[4]) != -1 &&
 						!fields[5].equals("gallery")){
@@ -83,35 +84,40 @@ public class Crawler {
 				}
 			}
 			catch(Exception e) {
+				logger.error("Formato da notícia desconhecido");
 			}
 		}
+		
 		for (String l : links) {
 			attempt=1;
-			while(attempt<=4){
+			while(attempt <= NUMBER_ATTEMPTS){
 				try{
 					adicionaCategory(contextOfNews(URL + l , attempt),categorias);
 					break;
 				}catch(IOException e){
 					attempt++;
+					if (attempt > NUMBER_ATTEMPTS) {
+						logger.error("Notícia indisponível: "+URL+l);
+					}
+				} catch (Exception e) {
+					logger.error("Notícia não adicionada (erro data): "+URL+l);
 				}
-				
 			}
-			
 		}
+		
 		String xml="";
 		try {
 			xml=marshalXML(categorias);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Erro marshalling "+e.getMessage());
 		}
 		
 		try {
 			SendTopic st= new SendTopic();
 			st.send(xml);
-		} catch (NamingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (Exception e) {
+			logger.error("Tópico indisponível");
+			return;
 		}
 		
 		
@@ -135,10 +141,9 @@ public class Crawler {
 		}
 	}
 	
-	public static String marshalXML(List<CategoriaType> catType) throws Exception{
+	public static String marshalXML(List<CategoriaType> catType) throws Exception {
 
-		  
-		String context = "pt.uc.dei.aor.paj";
+		String context = PACKAGE;
 		
 		JAXBContext jc = JAXBContext.newInstance(context);
 		
@@ -157,7 +162,7 @@ public class Crawler {
 
 	}
 
-	public static NoticiaType contextOfNews(String href, int attempt) throws IOException{
+	public static NoticiaType contextOfNews(String href, int attempt) throws Exception{
 		NoticiaType noticia= new NoticiaType();
 		noticia.setUrl(href);
 		//System.out.println(href);
@@ -174,8 +179,8 @@ public class Crawler {
 		// Regular Expression \\d{4} (example:2256) 
 		Pattern p1=Pattern.compile("(\\d{1,2})(\\d{2}) GMT");
 		Matcher m1 = p1.matcher(data.text());
-		int hour = 0, min = 0,day = 0,year=-1;
-		int month = 0;
+		int hour = -1, min = -1,day = -1,year=-1;
+		int month = -1;
 		if(m1.find()){
 			hour=Integer.parseInt(m1.group(1));
 			min=Integer.parseInt(m1.group(2));
@@ -198,7 +203,7 @@ public class Crawler {
 		try {
 			date = DatatypeFactory.newInstance().newXMLGregorianCalendar(dateNoticia);
 		} catch (DatatypeConfigurationException e1) {
-			e1.printStackTrace();
+			throw new Exception();
 		}
 		noticia.setDate(date);
 
