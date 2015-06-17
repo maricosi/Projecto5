@@ -101,6 +101,7 @@ public class Crawler {
 					}
 				} catch (Exception e) {
 					logger.error("Notícia não adicionada (erro data): "+URL+l);
+					break;
 				}
 			}
 		}
@@ -173,35 +174,36 @@ public class Crawler {
 		//System.out.println(title.text());
 		noticia.setTitulo(title.text());
 		
-		Element data = doc.getElementsByClass("update-time").first();
-		//System.out.println(data.text());
+		//Element data = doc.getElementsByClass("update-time").first();
+		String data = doc.select("meta[name=lastmod]").first().attr("content");
+		//System.out.println(data);
 		GregorianCalendar dateNoticia= new GregorianCalendar();
 		// Regular Expression \\d{4} (example:2256) 
-		Pattern p1=Pattern.compile("(\\d{1,2})(\\d{2}) GMT");
-		Matcher m1 = p1.matcher(data.text());
-		int hour = -1, min = -1,day = -1,year=-1;
-		int month = -1;
-		if(m1.find()){
-			hour=Integer.parseInt(m1.group(1));
-			min=Integer.parseInt(m1.group(2));
-		}
-		
-		Pattern p2=Pattern.compile("(\\w+) (\\d{1,2}), (\\d{4})");
-		Matcher m2 = p2.matcher(data.text());
-		List <String> months= Arrays.asList(new String[]{"January", "February", "March", "April","May", "June","July", "August","September","October","November","December"});
-		
-		if(m2.find()){
-			month=months.indexOf(m2.group(1));
-			day=Integer.parseInt(m2.group(2));
-			year=Integer.parseInt(m2.group(3));
-		}
-		 dateNoticia.setTimeZone(TimeZone.getTimeZone("GMT"));
-		 dateNoticia.set(year, month,day,hour,min);
-		 //System.out.println(dateNoticia.getTime());
-		
+//		Pattern p1=Pattern.compile("(\\d{1,2})(\\d{2}) GMT");
+//		Matcher m1 = p1.matcher(data.text());
+//		int hour = -1, min = -1,day = -1,year=-1;
+//		int month = -1;
+//		if(m1.find()){
+//			hour=Integer.parseInt(m1.group(1));
+//			min=Integer.parseInt(m1.group(2));
+//		}
+//		
+//		Pattern p2=Pattern.compile("(\\w+) (\\d{1,2}), (\\d{4})");
+//		Matcher m2 = p2.matcher(data.text());
+//		List <String> months= Arrays.asList(new String[]{"January", "February", "March", "April","May", "June","July", "August","September","October","November","December"});
+//		
+//		if(m2.find()){
+//			month=months.indexOf(m2.group(1));
+//			day=Integer.parseInt(m2.group(2));
+//			year=Integer.parseInt(m2.group(3));
+//		}
+//		 dateNoticia.setTimeZone(TimeZone.getTimeZone("GMT"));
+//		 dateNoticia.set(year, month,day,hour,min);
+//		 //System.out.println(dateNoticia.getTime());
+//		
 		 XMLGregorianCalendar date = null;
 		try {
-			date = DatatypeFactory.newInstance().newXMLGregorianCalendar(dateNoticia);
+			date = DatatypeFactory.newInstance().newXMLGregorianCalendar(data);
 		} catch (DatatypeConfigurationException e1) {
 			throw new Exception();
 		}
